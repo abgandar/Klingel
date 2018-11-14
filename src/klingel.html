@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <title>Klingel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- doesn't work with HTTP auth -->
+    <link rel="manifest" href="klingel.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" href="klingel-0-75x.png" sizes="32x32">
+    <link rel="icon" href="klingel-1x.png" sizes="48x48">
+    <link rel="icon" href="klingel-2x.png" sizes="96x96">
+    <link rel="icon" href="klingel-2-6x.png" sizes="128x128">
+    <link rel="icon" href="klingel-4x.png" sizes="192x192">
+    <link rel="icon" href="klingel-5-3x.png" sizes="256x256">
+    <link rel="apple-touch-icon" sizes="128x128" href="klingel-2-6x.png">
+<!-- Klingel icon by Babasse (Sebastien Durel)
+     Creative Commons Attribution-Noncommercial-No Derivate Works 3.0 Unported
+     http://babasse.deviantart.com/art/Old-School-79460710   -->
+    <style>
+      body { font-family: Helvetica, Arial, sans;
+        -webkit-touch-callout: none; /* iOS Safari */
+          -webkit-user-select: none; /* Chrome/Safari/Opera */
+           -khtml-user-select: none; /* Konqueror */
+             -moz-user-select: none; /* Firefox */
+              -ms-user-select: none; /* Internet Explorer/Edge */
+                  user-select: none; /* Non-prefixed version */ }
+      #keypad { position: fixed; top: 0px; left: 0px; height: 101%; width: 100%; border: none; border-collapse: collapse; }
+      .success { background: lightgreen; }
+      .error { background: pink; }
+      .number:active { background: lightgrey; }
+      .number { height: 21.25%; width: 33.3333%; background: #eeeeee; padding: 2px; text-align: center; font-size: 24px; cursor: default; }
+      #code { height: 15%; border: solid 1px black; padding: 2px; text-align: center; font-size: 48px; overflow: hidden; -webkit-transition: background 250ms; transition: background 250ms; }
+      #star { background: green; color: white; }
+      #hash { background: red; color: white; }
+    </style>
+    <script type="text/javascript">
+      code = "";
+
+      function key( ev )
+      {
+        ev = ev || window.event;
+        switch( ev.keyCode )
+        {
+          case '1'.charCodeAt( 0 ):
+          case '2'.charCodeAt( 0 ):
+          case '3'.charCodeAt( 0 ):
+          case '4'.charCodeAt( 0 ):
+          case '5'.charCodeAt( 0 ):
+          case '6'.charCodeAt( 0 ):
+          case '7'.charCodeAt( 0 ):
+          case '8'.charCodeAt( 0 ):
+          case '9'.charCodeAt( 0 ):
+          case '0'.charCodeAt( 0 ):
+            input( String.fromCharCode( ev.keyCode ) );
+            break;
+          case 27:    // escape
+            clear_inp( );
+            break;
+          case 13:    // enter
+            send( );
+            break;
+        }
+      }
+
+      function input( nr )
+      {
+        code += nr;
+        document.getElementById( "code" ).innerHTML += "•&nbsp;";
+        document.getElementById( "star" ).innerHTML = "&#x2713;";
+      }
+
+      function clear_inp( )
+      {
+        code = "";
+        document.getElementById( "code" ).innerHTML = "&nbsp;";
+        document.getElementById( "star" ).innerHTML = "&#x1f514;";
+      }
+
+      function send( )
+      {
+        var cell = document.getElementById( "code" );
+        var url = (code == "") ? "https://klingel/cgi-bin/klingel.cgi?ring" : "https://klingel/cgi-bin/klingel.cgi?"+encodeURIComponent( "open:"+code );
+        var xhr = new XMLHttpRequest( );
+        xhr.addEventListener( 'load',  function( ) { cell.className = "success"; setTimeout( function( ) { cell.className = ""; }, 250 ); } );
+        xhr.addEventListener( 'error', function( ) { cell.className = "error";   setTimeout( function( ) { cell.className = ""; }, 250 ); } );
+        xhr.open( 'GET', url, true );
+        xhr.send( );
+        clear_inp( );
+      }
+    </script>
+  </head>
+  <body onkeydown="key( )">
+    <table id="keypad">
+      <tr>
+        <td colspan="3" id="code">&nbsp;</td>
+      </tr>
+      <tr>
+        <td class="number" id="1" onclick="input( 1 );">1</td>
+        <td class="number" id="2" onclick="input( 2 );">2</td>
+        <td class="number" id="3" onclick="input( 3 );">3</td>
+      </tr>
+      <tr>
+        <td class="number" id="4" onclick="input( 4 );">4</td>
+        <td class="number" id="5" onclick="input( 5 );">5</td>
+        <td class="number" id="6" onclick="input( 6 );">6</td>
+      </tr>
+      <tr>
+        <td class="number" id="7" onclick="input( 7 );">7</td>
+        <td class="number" id="8" onclick="input( 8 );">8</td>
+        <td class="number" id="9" onclick="input( 9 );">9</td>
+      </tr>
+      <tr>
+        <td class="number" id="star" onclick="send( );">&#x1f514;</td>
+        <td class="number" id="0" onclick="input( 0 );">0</td>
+        <td class="number" id="hash" onclick="clear_inp( );">&#x232b;</td>
+      </tr>
+    </table>
+  </body>
+</html>

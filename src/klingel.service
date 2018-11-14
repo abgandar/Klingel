@@ -1,0 +1,16 @@
+[Unit]
+Description=Klingel SIP Telefon
+After=multi-user.target network.target
+
+[Service]
+Type=idle
+ExecStart=/usr/local/bin/klingel
+Restart=always
+RestartSec=1s
+KillSignal=SIGINT
+RuntimeDirectory=klingel
+RuntimeDirectoryMode=0755
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
