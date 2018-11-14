@@ -9,4 +9,4 @@ It can:
 * connect an external intercom system to the phone call
 * actuate a door buzzer via a PIN code during the call or through a web interface
 
-The SIP capability is provided by the excellent [PJSIP](https://www.pjsip.org/) library.
+The SIP capability is provided by the excellent [PJSIP](https://www.pjsip.org/) library. Before building the program, install the latest version of the library (currently 2.8.0) on your system.
